@@ -4,10 +4,13 @@ namespace Brucelwayne\Admin\Controllers;
 
 use App\Http\Controllers\Controller;
 use Brucelwayne\Admin\Requests\LoginRequest;
+use Illuminate\Contracts\Auth\StatefulGuard;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
+
     function login()
     {
 
@@ -25,8 +28,24 @@ class AuthController extends Controller
             session()->regenerate();
             return redirect()->intended();
         }
-        return redirect()->back()->withErrors([
-            'email' => 'Invalid email or password!',
-        ]);
+        return redirect()
+            ->back()
+            ->withInput($request->input())
+            ->withErrors([
+                'email' => 'Invalid email or password!',
+            ]);
+    }
+
+    function logout(Request $request)
+    {
+
+        Auth::guard('admin')->logout();
+
+        if ($request->hasSession()) {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
+
+        return to_route('welcome');
     }
 }

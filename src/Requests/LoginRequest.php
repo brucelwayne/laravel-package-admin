@@ -1,4 +1,5 @@
 <?php
+
 namespace Brucelwayne\Admin\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -11,6 +12,7 @@ class LoginRequest extends FormRequest
             'email' => 'required|email|max:100',
             'password' => 'required|min:8|max:100',
             'remember' => 'sometimes',
+            'captcha' => 'required|captcha',
         ];
     }
 }
