@@ -1,0 +1,39 @@
+{
+    "name": "brucelwayne/laravel-package-admin",
+    "description": "An open-source admin system based on Laravel that is ready to use out of the box.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Bruce Wayne"
+        }
+    ],
+    "require": {
+
+    },
+    "require-dev": {
+    },
+    "autoload": {
+        "psr-4": {
+            "Brucelwayne\\Admin\\": "src"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Brucelwayne\\Admin\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Brucelwayne\\Admin\\AdminServiceProvider"
+            ],
+            "aliases": {
+
+            }
+        }
+    }
+}
