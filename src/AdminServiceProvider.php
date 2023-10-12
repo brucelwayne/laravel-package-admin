@@ -8,7 +8,7 @@ use Illuminate\Support\ServiceProvider;
 class AdminServiceProvider extends ServiceProvider
 {
 
-    protected $module_name = 'admin';
+    protected string $module_name = 'admin';
 
     public function register()
     {
