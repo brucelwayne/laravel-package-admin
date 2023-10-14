@@ -7,6 +7,7 @@ use Brucelwayne\Admin\Requests\LoginRequest;
 use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Mallria\Core\Facades\Inertia;
 
 class AuthController extends Controller
 {
@@ -46,6 +47,6 @@ class AuthController extends Controller
             $request->session()->regenerateToken();
         }
 
-        return to_route('welcome');
+        return Inertia::location(route('admin.index'));
     }
 }

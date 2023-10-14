@@ -18,7 +18,7 @@ Route::domain(config('app.www_domain'))
             ->name('attempt-login');
     });
 
-    Route::middleware(['web','auth:admin'])->group(function(){
+    Route::middleware(['web','auth:admin','inertia'])->group(function(){
         Route::get('/',[WelcomeController::class,'index'])
             ->name('index');
         Route::post('logout',[AuthController::class, 'logout'])->name('logout');
