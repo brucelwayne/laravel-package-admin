@@ -8,11 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use Veelasky\LaravelHashId\Eloquent\HashableId;
 
 class AdminModel extends User implements MustVerifyEmail
 {
     use Notifiable;
     use TwoFactorAuthenticatable;
+    use HashableId;
 
     protected $table = 'admins';
 
@@ -33,5 +35,16 @@ class AdminModel extends User implements MustVerifyEmail
         'created_at',
         'updated_at',
     ];
+
+    //region hash id
+    protected $hashKey = self::class;
+    protected $appends = [
+        'hash'
+    ];
+    public function getRouteKeyName(): string
+    {
+        return 'hash';
+    }
+    //endregion
 
 }
