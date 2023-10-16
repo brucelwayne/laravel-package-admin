@@ -8,13 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Veelasky\LaravelHashId\Eloquent\HashableId;
 
-class AdminModel extends User implements MustVerifyEmail
+class AdminModel extends User implements MustVerifyEmail,HasMedia
 {
     use Notifiable;
     use TwoFactorAuthenticatable;
     use HashableId;
+    use InteractsWithMedia;
 
     protected $table = 'admins';
 
@@ -47,4 +50,11 @@ class AdminModel extends User implements MustVerifyEmail
     }
     //endregion
 
+    public function registerMediaConversions($media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->width(368)
+            ->height(232)
+            ->sharpen(10);
+    }
 }
