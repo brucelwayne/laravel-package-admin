@@ -9,6 +9,8 @@ class WelcomeController extends Controller
 {
 
     function index(){
-        return view('admin::welcome');
+//        return view('admin::welcome');
+//        return Inertia::render('Admin/Dashboard/Index');
+        return Inertia::renderVue('Admin/Dashboard');
     }
 }
