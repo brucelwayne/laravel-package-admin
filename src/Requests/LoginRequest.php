@@ -12,7 +12,8 @@ class LoginRequest extends FormRequest
             'email' => 'required|email|max:100',
             'password' => 'required|min:8|max:100',
             'remember' => 'sometimes',
-            'captcha' => 'required|captcha',
+            'g-recaptcha-response' => 'recaptcha',
+//            'captcha' => 'required|captcha',
         ];
     }
 }
