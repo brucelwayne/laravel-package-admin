@@ -6,7 +6,7 @@ use Brucelwayne\Admin\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 
 Route::domain(config('app.www_domain'))
-    ->prefix('admin')
+    ->prefix('mallria-admin')
     ->name('admin.')
     ->group(function () {
         Route::middleware(['web'])->group(function () {
