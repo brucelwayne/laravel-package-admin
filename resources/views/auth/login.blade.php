@@ -40,9 +40,14 @@
                                 </div>
                             </div>
                         </div>
-                        <button type="submit" class="w-full text-white px-4 lg:px-6 py-3 lg:py-4 text-sm lg:text-lg bg-primary-900 hover:bg-primary-800 text-white capitalize font-semibold rounded">
-                            Sign in
-                        </button>
+                        <div>
+                            <button type="submit" class="px-6 py-2
+                        bg-gray-700 hover:bg-gray-600 text-white text-sm
+                        transition-all ease-in-out
+                        capitalize rounded">
+                                Sign in
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>

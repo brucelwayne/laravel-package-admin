@@ -6,7 +6,7 @@ use Brucelwayne\Admin\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 
 Route::domain(config('app.www_domain'))
-    ->prefix('mallria-admin')
+    ->prefix(config('app.admin.prefix'))
     ->name('admin.')
     ->group(function () {
         Route::middleware(['web'])->group(function () {
@@ -18,7 +18,7 @@ Route::domain(config('app.www_domain'))
                 ->name('attempt-login');
         });
 
-        Route::middleware(['web', 'auth:admin', 'inertia'])->group(function () {
+        Route::middleware(['web', 'auth:admin'])->group(function () {
             Route::get('/', [WelcomeController::class, 'index'])
                 ->name('index');
             Route::post('logout', [AuthController::class, 'logout'])->name('logout');
