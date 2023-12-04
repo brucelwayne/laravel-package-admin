@@ -18,22 +18,22 @@
                     </li>
                     <li>
                         <a href="{{route('admin.brands.entries')}}" class="flex items-center p-2 text-gray-900 rounded dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                            <span class="ml-3">Brand Entries</span>
+                            <span class="ml-3">Entries</span>
                         </a>
                     </li>
                     <li>
                         <a href="{{route('admin.brands.entries')}}" class="flex items-center p-2 text-gray-900 rounded dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                            <span class="ml-3">Brand Establishing</span>
+                            <span class="ml-3">Establishing</span>
                         </a>
                     </li>
                     <li>
                         <a href="{{route('admin.brands.entries')}}" class="flex items-center p-2 text-gray-900 rounded dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                            <span class="ml-3">Brands Feedback</span>
+                            <span class="ml-3">Feedback</span>
                         </a>
                     </li>
                     <li>
                         <a href="{{route('admin.brands.entries')}}" class="flex items-center p-2 text-gray-900 rounded dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                            <span class="ml-3">Brands Vents</span>
+                            <span class="ml-3">Venting</span>
                         </a>
                     </li>
                 </ul>
