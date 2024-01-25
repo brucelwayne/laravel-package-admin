@@ -2,9 +2,7 @@
 
 namespace Brucelwayne\Admin\Models;
 
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -19,7 +17,7 @@ class AdminModel extends User implements MustVerifyEmail,HasMedia
     use HashableId;
     use InteractsWithMedia;
 
-    protected $table = 'admins';
+    protected $table = 'blw_admins';
 
     protected $guard = 'admin';
 

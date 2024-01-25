@@ -9,7 +9,7 @@ return new class extends Migration {
 
     public function up(): void
     {
-        Schema::create('admins', function ($table) {
+        Schema::create('blw_admins', function ($table) {
             /**
              * @var Illuminate\Database\Schema\Blueprint|MongoDB\Laravel\Schema\Blueprint $table
              */
