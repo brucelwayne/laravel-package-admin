@@ -10,7 +10,7 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Veelasky\LaravelHashId\Eloquent\HashableId;
 
-class AdminModel extends User implements MustVerifyEmail,HasMedia
+class AdminModel extends User implements MustVerifyEmail, HasMedia
 {
     use Notifiable;
     use TwoFactorAuthenticatable;
@@ -42,17 +42,20 @@ class AdminModel extends User implements MustVerifyEmail,HasMedia
     protected $appends = [
         'hash'
     ];
+
     public function getRouteKeyName(): string
     {
         return 'hash';
     }
+
     //endregion
 
     public function registerMediaConversions($media = null): void
     {
-        $this->addMediaConversion('thumb')
-            ->width(368)
-            ->height(232)
-            ->sharpen(10);
+        generate_thumbnail($this, $media);
+//        $this->addMediaConversion('thumb')
+//            ->width(368)
+//            ->height(232)
+//            ->sharpen(10);
     }
 }
