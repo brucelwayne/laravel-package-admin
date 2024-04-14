@@ -38,7 +38,7 @@ class AdminModel extends User implements MustVerifyEmail, HasMedia
     ];
 
     //region hash id
-    protected $hashKey = self::class;
+    protected $hashKey = 'blw_admins';
     protected $appends = [
         'hash'
     ];
