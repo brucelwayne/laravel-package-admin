@@ -9,7 +9,7 @@
         }
     ],
     "require": {
-        "mews/captcha": "^v3.3"
+        
     },
     "require-dev": {
     },
