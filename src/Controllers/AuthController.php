@@ -2,20 +2,20 @@
 
 namespace Brucelwayne\Admin\Controllers;
 
+namespace Brucelwayne\Admin\Controllers;
+
 use App\Http\Controllers\Controller;
 use Brucelwayne\Admin\Requests\LoginRequest;
-use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Mallria\Core\Facades\Inertia;
+use Mallria\Core\Http\Responses\ErrorJsonResponse;
+use Mallria\Core\Http\Responses\SuccessJsonResponse;
 
 class AuthController extends Controller
 {
-
     function login()
     {
-
-        return view('admin::auth.login');
+        return inertia('Admin/Auth/Login');
     }
 
     function attemptLogin(LoginRequest $request)
@@ -24,22 +24,18 @@ class AuthController extends Controller
             'email' => $request->validated('email'),
             'password' => $request->validated('password'),
         ];
-        $remember = $request->validated('remember') === 'on';
+        $remember = $request->validated('remember') === true;
+
         if (Auth::guard('admin')->attempt($credential, $remember)) {
             session()->regenerate();
-            return redirect()->intended();
+            return new SuccessJsonResponse();
         }
-        return redirect()
-            ->back()
-            ->withInput($request->input())
-            ->withErrors([
-                'email' => 'Invalid email or password!',
-            ]);
+
+        return new ErrorJsonResponse(__('Invalid email or password!'), [], 402);
     }
 
     function logout(Request $request)
     {
-
         Auth::guard('admin')->logout();
 
         if ($request->hasSession()) {
@@ -47,6 +43,6 @@ class AuthController extends Controller
             $request->session()->regenerateToken();
         }
 
-        return Inertia::location(route('admin.index'));
+        return new SuccessJsonResponse();
     }
 }

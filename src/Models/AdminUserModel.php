@@ -10,14 +10,16 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Veelasky\LaravelHashId\Eloquent\HashableId;
 
-class AdminModel extends User implements MustVerifyEmail, HasMedia
+class AdminUserModel extends User implements MustVerifyEmail, HasMedia
 {
     use Notifiable;
     use TwoFactorAuthenticatable;
     use HashableId;
     use InteractsWithMedia;
 
-    protected $table = 'blw_admins';
+    const TABLE = 'blw_admins';
+
+    protected $table = self::TABLE;
 
     protected $guard = 'admin';
 
@@ -38,7 +40,7 @@ class AdminModel extends User implements MustVerifyEmail, HasMedia
     ];
 
     //region hash id
-    protected $hashKey = 'blw_admins';
+    protected $hashKey = self::TABLE;
     protected $appends = [
         'hash'
     ];

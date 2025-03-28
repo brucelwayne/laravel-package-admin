@@ -2,14 +2,14 @@
     <div class="p-4">
         <div class="flex items-center justify-between">
             <div class="flex items-center justify-start">
-                <a href="{{route('admin.index')}}" class="flex ml-2 md:mr-24 font-bold uppercase text-lg">
+                <a href="{{route('admin.dashboard')}}" class="flex ml-2 md:mr-24 font-bold uppercase text-lg">
                     Mallria Admin
                 </a>
             </div>
             <div class="flex-1">
                 <ul class="flex flex-wrap items-center justify-start space-x-4 font-semibold">
                     <li>
-                        <a href="{{route('welcome')}}"
+                        <a href="{{route('admin.dashboard')}}"
                            class=" text-gray-700 hover:text-gray-800 hover:underline underline-offset-4">
                             Home
                         </a>

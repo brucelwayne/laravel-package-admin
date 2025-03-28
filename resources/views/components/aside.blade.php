@@ -2,7 +2,7 @@
     <div class="h-full pb-4 overflow-y-auto bg-white">
         <ul class="space-y-2 text-sm">
             <li>
-                <a href="{{route('admin.index')}}" class="flex items-center p-2 text-gray-900 rounded dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <a href="{{route('admin.dashboard')}}" class="flex items-center p-2 text-gray-900 rounded dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                     <span class="ml-3">Dashboard</span>
                 </a>
             </li>

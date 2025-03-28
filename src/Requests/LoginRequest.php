@@ -10,9 +10,9 @@ class LoginRequest extends FormRequest
     {
         return [
             'email' => 'required|email|max:100',
-            'password' => 'required|min:8|max:100',
+            'password' => 'required|min:6|max:100',
             'remember' => 'sometimes',
-            'g-recaptcha-response' => 'recaptcha',
+//            'g-recaptcha-response' => 'recaptcha',
 //            'captcha' => 'required|captcha',
         ];
     }
