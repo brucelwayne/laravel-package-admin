@@ -1,5 +1,5 @@
 <?php
 
 return array(
-    'url-prefix' => env('ADMIN_URL_PREFIX'),
+    'url-prefix' => env('ADMIN_URL_PREFIX', 'admin'),
 );
