@@ -32,6 +32,8 @@ Route::prefix(config('admin.url-prefix'))
 
         Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
+        Route::get('/', [WelcomeController::class, 'index'])
+            ->name('home');
         Route::get('/dashboard', [WelcomeController::class, 'index'])
             ->name('dashboard');
 
