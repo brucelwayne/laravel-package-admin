@@ -2,47 +2,44 @@
 
 namespace Brucelwayne\Admin\Controllers;
 
-namespace Brucelwayne\Admin\Controllers;
-
-use App\Http\Controllers\Controller;
-use Brucelwayne\Admin\Requests\LoginRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Mallria\Core\Http\Responses\ErrorJsonResponse;
-use Mallria\Core\Http\Responses\SuccessJsonResponse;
+use Illuminate\Support\Str;
+use Mallria\Core\Facades\Inertia;
+use Mallria\Main\Controllers\BaseAuthController;
 
-class AuthController extends Controller
+class AuthController extends BaseAuthController
 {
     function login()
     {
-        return inertia('Admin/Auth/Login');
-    }
-
-    function attemptLogin(LoginRequest $request)
-    {
-        $credential = [
-            'email' => $request->validated('email'),
-            'password' => $request->validated('password'),
-        ];
-        $remember = $request->validated('remember') === true;
-
-        if (Auth::guard('admin')->attempt($credential, $remember)) {
-            session()->regenerate();
-            return new SuccessJsonResponse();
+        $from = $_SERVER['HTTP_REFERER'] ?? route('business.dashboard');
+        // 获取应用的完整 URL
+        $appUrl = config('app.url');
+        // 判断来源 URL 是否以应用完整域名开头
+        if (!str_starts_with($from, $appUrl)) {
+            // 如果来源不是应用域名，则重定向到用户的仪表板
+            $from = route('admin.dashboard');
         }
 
-        return new ErrorJsonResponse(__('Invalid email or password!'), [], 402);
+        return Inertia::render('Admin/Auth/Login', [
+            'from' => $from,
+            'nonce' => Str::random(32),
+        ]);
+    }
+
+    function sendEmailOtp(Request $request)
+    {
+        return $this->sendOtp($request);
+    }
+
+    function verityEmailOtp(Request $request)
+    {
+        return $this->verifyAndLogin($request, 'admin'); // 普通用户使用 'web' guard
     }
 
     function logout(Request $request)
     {
         Auth::guard('admin')->logout();
-
-        if ($request->hasSession()) {
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-        }
-
-        return new SuccessJsonResponse();
+        return Inertia::location(route('admin.login'));
     }
 }
