@@ -2,6 +2,7 @@
 
 namespace Brucelwayne\Admin\Controllers;
 
+use Brucelwayne\Admin\Requests\LoginRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -27,7 +28,7 @@ class AuthController extends BaseAuthController
         ]);
     }
 
-    function sendEmailOtp(Request $request)
+    function sendEmailOtp(LoginRequest $request)
     {
         return $this->sendOtp($request);
     }

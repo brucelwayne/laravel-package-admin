@@ -2,7 +2,9 @@
 
 namespace Brucelwayne\Admin\Requests;
 
+use Brucelwayne\Admin\Models\AdminUserModel;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Http;
 
 class LoginRequest extends FormRequest
 {
@@ -10,10 +12,38 @@ class LoginRequest extends FormRequest
     {
         return [
             'email' => 'required|email|max:100',
-            'password' => 'required|min:6|max:100',
-            'remember' => 'sometimes',
-//            'g-recaptcha-response' => 'recaptcha',
-//            'captcha' => 'required|captcha',
+            'cf-turnstile-response' => 'required', // Ensure Turnstile response field is present
         ];
+    }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            // 1. First, verify Cloudflare Turnstile
+            $turnstileResponse = $this->input('cf-turnstile-response');
+
+            $response = Http::asForm()->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
+                'secret' => env('TURNSTILE_SECRET_KEY'),
+                'response' => $turnstileResponse,
+                'remoteip' => $this->ip(),
+            ]);
+
+            if (!$response->json('success')) {
+                $validator->errors()->add('cf-turnstile-response', 'Captcha verification failed. Please try again.');
+                return; // Stop further validation if Turnstile verification fails
+            }
+
+            // 2. Then, check if the user is an admin
+            $user = AdminUserModel::where('email', $this->input('email'))->first();
+
+            if (!$user || !$this->isAdmin($user)) {
+                $validator->errors()->add('email', 'Invalid request.');
+            }
+        });
+    }
+
+    private function isAdmin(AdminUserModel $user)
+    {
+        return $user->is_admin; // Ensure only admin users pass
     }
 }
