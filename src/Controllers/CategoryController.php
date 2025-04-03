@@ -492,7 +492,6 @@ class CategoryController extends BaseAdminController
 
         $locale = $request->get('locale');
 
-
         return InertiaAdminFacade::render('Admin/Category/Edit', [
             'category' => $category,
             'locale' => $locale,
