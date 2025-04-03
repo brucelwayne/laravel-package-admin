@@ -4,7 +4,7 @@ namespace Brucelwayne\Admin\Controllers;
 
 use Illuminate\Http\Request;
 use Mallria\Core\Enums\PostType;
-use Mallria\Core\Facades\Inertia;
+use Mallria\Core\Facades\InertiaAdminFacade;
 use Mallria\Core\Http\Responses\SuccessJsonResponse;
 use Mallria\Main\Models\FeatureTagModel;
 use Mallria\Shop\Models\TransProductModel;
@@ -43,7 +43,7 @@ class FeatureTagController extends BaseAdminController
                 ->cursorPaginate(20);
         }
 
-        return Inertia::render('Business/Admin/FeatureTags/Index', [
+        return InertiaAdminFacade::render('Admin/FeatureTags/Index', [
             'products' => $product_models,
             'tags' => $tags,
             'tag' => $currentTag,
