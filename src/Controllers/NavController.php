@@ -17,7 +17,7 @@ use Mallria\Main\Models\MainNavModel;
 use Mallria\Shop\Models\TransInsightModel;
 use Mallria\Shop\Models\TransProductModel;
 
-class MainNavController extends BaseAdminController
+class NavController extends BaseAdminController
 {
     function index(Request $request)
     {
@@ -27,7 +27,7 @@ class MainNavController extends BaseAdminController
             ->get()
             ->toTree();
 
-        return InertiaAdminFacade::render('Admin/MainNav/Index', [
+        return InertiaAdminFacade::render('Admin/Nav/Index', [
             'navs' => $navs,
         ]);
     }
