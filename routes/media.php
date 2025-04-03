@@ -1,7 +1,7 @@
 <?php
 
 
-use Brucelwayne\Admin\Controllers\ProductsController;
+use Brucelwayne\Admin\Controllers\MediaController;
 use Illuminate\Support\Facades\Route;
 
 //管理员登录后
@@ -10,6 +10,7 @@ Route::prefix(config('admin.url-prefix'))
     ->middleware(['web', 'auth.admin'])
     ->group(function () {
 
-        Route::get('/admin/orders/index', [ProductsController::class, 'index'])->name('orders.index');
+        //网页导航栏
+        Route::get('/media/upload-media-chunk', [MediaController::class, 'uploadChunk'])->name('media.upload-media-chunk');
 
     });
