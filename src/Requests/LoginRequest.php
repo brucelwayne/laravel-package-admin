@@ -19,8 +19,15 @@ class LoginRequest extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
+
             // 1. First, verify Cloudflare Turnstile
             $turnstileResponse = $this->input('cf-turnstile-response');
+
+            // 检查 $turnstileResponse 是否为空
+            if (empty($turnstileResponse)) {
+                $validator->errors()->add('cf-turnstile-response', 'Captcha response is missing. Please try again.');
+                return; // 直接返回，停止后续验证
+            }
 
             $response = Http::asForm()->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
                 'secret' => env('TURNSTILE_SECRET_KEY'),

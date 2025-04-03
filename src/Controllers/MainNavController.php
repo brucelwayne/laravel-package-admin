@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Mallria\App\Models\LinkModel;
 use Mallria\Category\Models\TransCategoryModel;
-use Mallria\Core\Facades\Inertia;
+use Mallria\Core\Facades\InertiaAdminFacade;
 use Mallria\Core\Http\Responses\ErrorJsonResponse;
 use Mallria\Core\Http\Responses\SuccessJsonResponse;
 use Mallria\Core\Models\PageModel;
@@ -26,7 +26,8 @@ class MainNavController extends BaseAdminController
             ->defaultOrder()
             ->get()
             ->toTree();
-        return Inertia::render('Business/Admin/MainNav/Index', [
+
+        return InertiaAdminFacade::render('Admin/MainNav/Index', [
             'navs' => $navs,
         ]);
     }
