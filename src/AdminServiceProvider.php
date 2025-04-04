@@ -43,6 +43,7 @@ class AdminServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(__DIR__ . '/../routes/media.php');
         $this->loadRoutesFrom(__DIR__ . '/../routes/nav.php');
         $this->loadRoutesFrom(__DIR__ . '/../routes/order.php');
+        $this->loadRoutesFrom(__DIR__ . '/../routes/page.php');
         $this->loadRoutesFrom(__DIR__ . '/../routes/permission.php');
         $this->loadRoutesFrom(__DIR__ . '/../routes/product.php');
         $this->loadRoutesFrom(__DIR__ . '/../routes/seller.php');
