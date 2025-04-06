@@ -5,7 +5,7 @@ namespace Brucelwayne\Admin\Requests;
 use Brucelwayne\Admin\Models\AdminUserModel;
 use Illuminate\Foundation\Http\FormRequest;
 
-class LoginRequest extends FormRequest
+class TurnstileLoginRequest extends FormRequest
 {
     public function rules()
     {
