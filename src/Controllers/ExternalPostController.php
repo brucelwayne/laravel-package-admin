@@ -57,9 +57,18 @@ class ExternalPostController extends BaseAdminController
         $post_type = $request->post('type', PostType::Post->value);
         $post_type = PostType::from($post_type);
 
+        $team_id = null;
+        if (!empty(TenantFacade::get())) {
+            $team_id = TenantFacade::get()->getKey();
+        }
+        $app_id = null;
+        if (!empty(AppFacade::get())) {
+            $app_id = AppFacade::get()->getKey();
+        }
+
         $post_model = MallriaPostModel::create([
-            'team_id' => TenantFacade::getOrFail()->getKey(),
-            'app_id' => AppFacade::getOrFail()->getKey(),
+            'team_id' => $team_id,
+            'app_id' => $app_id,
             'user_id' => $user->getKey(),
             'type' => $post_type->value,
             'content' => $request->post('content'),

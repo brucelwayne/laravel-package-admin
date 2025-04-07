@@ -10,10 +10,10 @@ class SellerController extends BaseAdminController
 {
     function index(Request $request)
     {
-        $tenants = BusinessModel::where('verified', false)->cursorPaginate(20);
+        $sellers = BusinessModel::where('verified', false)->cursorPaginate(20);
 
-        return InertiaAdminFacade::render('Admin/Tenant/Index', [
-            'tenants' => $tenants,
+        return InertiaAdminFacade::render('Admin/Seller/Index', [
+            'sellers' => $sellers,
         ]);
     }
 }
