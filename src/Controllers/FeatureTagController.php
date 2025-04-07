@@ -43,7 +43,7 @@ class FeatureTagController extends BaseAdminController
                 ->cursorPaginate(20);
         }
 
-        return InertiaAdminFacade::render('Admin/FeatureTags/Index', [
+        return InertiaAdminFacade::render('Admin/FeatureTag/Index', [
             'products' => $product_models,
             'tags' => $tags,
             'tag' => $currentTag,

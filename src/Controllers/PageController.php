@@ -19,7 +19,7 @@ use Mallria\Core\Models\PageModel;
 use Mallria\Main\Enums\MallriaPage;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
-class PagesController extends BaseAdminController
+class PageController extends BaseAdminController
 {
     protected $modelHashNameInRequestParams = 'page';
     protected $jobModelClassName = PageModel::class;
@@ -195,7 +195,7 @@ class PagesController extends BaseAdminController
         $routes = MallriaPage::getSelectOptions();
 
 
-        return InertiaAdminFacade::render('Admin/Pages/Index', [
+        return InertiaAdminFacade::render('Admin/Page/Index', [
             'pages' => $page_models,
             'routes' => $routes
         ]);
