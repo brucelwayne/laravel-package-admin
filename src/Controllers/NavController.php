@@ -249,6 +249,15 @@ class NavController extends BaseAdminController
             $navs = MainNavModel::search($query)->orderBy('created_at', 'desc')->paginate($perPage);
         }
 
+        if (!is_empty($navs)) {
+            foreach ($navs as $nav) {
+                $ancestors = $nav->getAncestors();
+                $nav->setAttribute('ancestors', $ancestors);
+                $path = collect($ancestors)->pluck('name');
+                $nav->setAttribute('path', $path);
+            }
+        }
+
         return new  SuccessJsonResponse([
             'navs' => $navs,
         ]);
