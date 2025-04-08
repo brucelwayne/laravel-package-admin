@@ -85,15 +85,27 @@ class NavController extends BaseAdminController
                 ]);
             }
         } else if ($link_type == LinkType::Page) {
+            if (empty($model_hash)) {
+                return new ErrorJsonResponse(__('请选择关联的对象！'));
+            }
             $model_hash = Arr::get($validated, 'page');
             $model = PageModel::byHashOrFail($model_hash);
         } elseif ($link_type === LinkType::Category) {
+            if (empty($model_hash)) {
+                return new ErrorJsonResponse(__('请选择关联的对象！'));
+            }
             $model_hash = Arr::get($validated, 'category');
             $model = TransCategoryModel::byHashOrFail($model_hash);
         } elseif ($link_type === LinkType::Product) {
+            if (empty($model_hash)) {
+                return new ErrorJsonResponse(__('请选择关联的对象！'));
+            }
             $model_hash = Arr::get($validated, 'product');
             $model = TransProductModel::byHashOrFail($model_hash);
         } elseif ($link_type === LinkType::Insight) {
+            if (empty($model_hash)) {
+                return new ErrorJsonResponse(__('请选择关联的对象！'));
+            }
             $model_hash = Arr::get($validated, 'insight');
             $model = TransInsightModel::byHashOrFail($model_hash);
         }
