@@ -18,5 +18,4 @@ Route::prefix(config('admin.url-prefix'))
         Route::post('/navs/up', [NavController::class, 'up'])->name('nav.up');
         Route::post('/navs/down', [NavController::class, 'down'])->name('nav.down');
         Route::delete('/navs/delete', [NavController::class, 'delete'])->name('nav.delete');
-
     });

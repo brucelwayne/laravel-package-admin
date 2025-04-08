@@ -4,6 +4,7 @@ namespace Brucelwayne\Admin\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Mallria\App\Models\LinkModel;
@@ -12,6 +13,7 @@ use Mallria\Core\Facades\InertiaAdminFacade;
 use Mallria\Core\Http\Responses\ErrorJsonResponse;
 use Mallria\Core\Http\Responses\SuccessJsonResponse;
 use Mallria\Core\Models\PageModel;
+use Mallria\Main\Enums\CacheKey;
 use Mallria\Main\Enums\LinkType;
 use Mallria\Main\Models\MainNavModel;
 use Mallria\Shop\Models\TransInsightModel;
@@ -113,7 +115,7 @@ class NavController extends BaseAdminController
                 return new ErrorJsonResponse(__('请选择关联的对象！'));
             }
             $model = TransInsightModel::byHashOrFail($model_hash);
-            
+
         }
 
         if (empty($model)) {
@@ -270,6 +272,12 @@ class NavController extends BaseAdminController
         return new SuccessJsonResponse([
             'result' => $result
         ]);
+    }
+
+    function clearCache(Request $request)
+    {
+        Cache::delete(CacheKey::MainNavData->value);
+        return new SuccessJsonResponse();
     }
 
     function delete(Request $request)
