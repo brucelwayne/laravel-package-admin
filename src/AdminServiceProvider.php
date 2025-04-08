@@ -65,6 +65,6 @@ class AdminServiceProvider extends ServiceProvider
 
     protected function loadBladeViews(): void
     {
-        $this->loadViewsFrom(__DIR__ . '/../resources/views', $this->module_name);
+//        $this->loadViewsFrom(__DIR__ . '/../resources/views', $this->module_name);
     }
 }
