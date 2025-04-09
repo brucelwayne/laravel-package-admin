@@ -11,5 +11,5 @@ Route::prefix(config('admin.url-prefix'))
     ->group(function () {
 //店铺管理
         Route::get('/shops/index', [SellerController::class, 'index'])->name('shops.index');
-
+        Route::put('/shops/update-status', [SellerController::class, 'updateStatus'])->name('shops.update-status');
     });
