@@ -23,6 +23,23 @@ class NavController extends BaseAdminController
 {
     function index(Request $request)
     {
+        $keywords = $request->get('q');
+        if (!empty($keywords)) {
+            $navs = MainNavModel::search($keywords)
+                ->paginate(10);
+            if (!is_empty($navs)) {
+                foreach ($navs as $nav) {
+                    $ancestors = $nav->getAncestors();
+                    $nav->setAttribute('ancestors', $ancestors);
+                    $path = collect($ancestors)->pluck('name');
+                    $nav->setAttribute('path', $path);
+                }
+            }
+            return InertiaAdminFacade::render('Admin/Nav/SearchResult', [
+                'navs' => $navs,
+            ]);
+        }
+
         $navs = MainNavModel::with(['model', 'model.translations', 'translations', 'navParent', 'navParent.model', 'navParent.translations',])
             ->orderBy('id', 'desc')
             ->defaultOrder()
@@ -39,7 +56,7 @@ class NavController extends BaseAdminController
         $validator = Validator::make($request->all(), [
             'parent' => ['nullable'],
             'name' => ['required', 'string', 'max:32'],
-            'link_type' => ['required', 'in:link,page,category,product,insight'],
+            'link_type' => ['required', 'in:none,link,page,category,product,insight'],
             'link_target' => ['required', 'in:_blank,_self'],
             'href' => ['nullable', 'url'],
             'link' => ['nullable', 'max:32'],
@@ -72,7 +89,9 @@ class NavController extends BaseAdminController
         $link_type = LinkType::from($link_type);
 
         $model = null;
-        if ($link_type === LinkType::Link) {
+        if ($link_type === LinkType::None) {
+
+        } else if ($link_type === LinkType::Link) {
             $link_hash = Arr::get($validated, 'link');
             $href = Arr::get($validated, 'href');
             if (empty($href)) {
@@ -118,7 +137,7 @@ class NavController extends BaseAdminController
 
         }
 
-        if (empty($model)) {
+        if ($link_type !== LinkType::None && empty($model)) {
             return new ErrorJsonResponse('关联模型错误！');
         }
 
@@ -132,8 +151,10 @@ class NavController extends BaseAdminController
             'icon_image' => Arr::get($validated, 'icon_image'),
         ]);
 
-        $main_nav_model->model()->associate($model);
-        $main_nav_model->save();
+        if ($link_type !== LinkType::None) {
+            $main_nav_model->model()->associate($model);
+            $main_nav_model->save();
+        }
 
         if (!empty($parent)) {
             $parent->appendNode($main_nav_model);
