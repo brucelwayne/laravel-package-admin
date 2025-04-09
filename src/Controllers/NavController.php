@@ -51,6 +51,31 @@ class NavController extends BaseAdminController
         ]);
     }
 
+    function search(Request $request)
+    {
+        $query = urldecode($request->get('q', ''));
+        $perPage = $request->get('per_page', 10);
+
+        if (empty($query)) {
+            $navs = MainNavModel::orderBy('id', 'desc')->paginate($perPage);
+        } else {
+            $navs = MainNavModel::search($query)->orderBy('created_at', 'desc')->paginate($perPage);
+        }
+
+        if (!is_empty($navs)) {
+            foreach ($navs as $nav) {
+                $ancestors = $nav->getAncestors();
+                $nav->setAttribute('ancestors', $ancestors);
+                $path = collect($ancestors)->pluck('name');
+                $nav->setAttribute('path', $path);
+            }
+        }
+
+        return new  SuccessJsonResponse([
+            'navs' => $navs,
+        ]);
+    }
+
     function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -171,7 +196,7 @@ class NavController extends BaseAdminController
             'nav' => ['required', 'string', 'max:32'],
             'parent' => ['nullable'],
             'name' => ['required', 'string', 'max:32'],
-            'link_type' => ['required', 'in:link,page,category,product,insight'],
+            'link_type' => ['required', 'in:none,link,page,category,product,insight'],
             'link_target' => ['required', 'in:_blank,_self'],
             'href' => ['nullable', 'url'],
             'link' => ['nullable', 'max:32'],
@@ -203,7 +228,9 @@ class NavController extends BaseAdminController
         $link_type = LinkType::from($link_type);
 
         $model = null;
-        if ($link_type === LinkType::Link) {
+        if ($link_type === LinkType::None) {
+
+        } else if ($link_type === LinkType::Link) {
             $link_hash = Arr::get($validated, 'link');
             $href = Arr::get($validated, 'href');
             if (empty($href)) {
@@ -247,8 +274,15 @@ class NavController extends BaseAdminController
             'icon_image' => Arr::get($validated, 'icon_image'),
         ]);
 
-        $main_nav_model->model()->associate($model);
-        $main_nav_model->save();
+        if (!empty($model)) {
+            $main_nav_model->model()->associate($model);
+            $main_nav_model->save();
+        } else {
+            $main_nav_model->update([
+                'model_id' => null,
+                'model_type' => null,
+            ]);
+        }
 
         if (!empty($parent)) {
             $parent->appendNode($main_nav_model);
@@ -256,31 +290,6 @@ class NavController extends BaseAdminController
 
         return new SuccessJsonResponse([
             'nav' => $main_nav_model,
-        ]);
-    }
-
-    function search(Request $request)
-    {
-        $query = urldecode($request->get('q', ''));
-        $perPage = $request->get('per_page', 10);
-
-        if (empty($query)) {
-            $navs = MainNavModel::orderBy('id', 'desc')->paginate($perPage);
-        } else {
-            $navs = MainNavModel::search($query)->orderBy('created_at', 'desc')->paginate($perPage);
-        }
-
-        if (!is_empty($navs)) {
-            foreach ($navs as $nav) {
-                $ancestors = $nav->getAncestors();
-                $nav->setAttribute('ancestors', $ancestors);
-                $path = collect($ancestors)->pluck('name');
-                $nav->setAttribute('path', $path);
-            }
-        }
-
-        return new  SuccessJsonResponse([
-            'navs' => $navs,
         ]);
     }
 
