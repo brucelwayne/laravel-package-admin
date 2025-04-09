@@ -31,7 +31,7 @@ Route::prefix(config('admin.url-prefix'))
             ->name('categories.create');
         Route::post('categories/store', [CategoryController::class, 'store'])
             ->name('categories.store');
-        Route::get('categories/edit', [CategoryController::class, 'edit'])
+        Route::match(['get', 'post'], 'categories/edit', [CategoryController::class, 'edit'])
             ->name('categories.edit');
         Route::put('categories/update', [CategoryController::class, 'update'])
             ->name('categories.update');
