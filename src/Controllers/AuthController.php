@@ -41,6 +41,10 @@ class AuthController extends BaseAuthController
     function logout(Request $request)
     {
         Auth::guard('admin')->logout();
+        // 使当前会话失效
+        $request->session()->invalidate();
+        // 重新生成会话令牌以防止CSRF攻击
+        $request->session()->regenerateToken();
         return Inertia::location(route('admin.login'));
     }
 }

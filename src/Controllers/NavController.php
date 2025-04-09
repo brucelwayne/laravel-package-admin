@@ -258,10 +258,6 @@ class NavController extends BaseAdminController
             $model = TransInsightModel::byHashOrFail($model_hash);
         }
 
-        if (empty($model)) {
-            return new ErrorJsonResponse('关联模型错误！');
-        }
-
         $main_nav_hash = Arr::get($validated, 'nav');
         $main_nav_model = MainNavModel::byHashOrFail($main_nav_hash);
         $main_nav_model->update([
