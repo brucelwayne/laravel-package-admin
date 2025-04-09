@@ -16,12 +16,28 @@ class ProductController extends BaseAdminController
 {
     function index(Request $request)
     {
-        $products = TransProductModel::where('status', PostStatus::ReadyForApproval)
+        $products = TransProductModel::with(["mediable", "purchaseInfo"])
+//            ->where('status', PostStatus::ReadyForApproval)
             ->cursorPaginate(20);
 
-        return InertiaAdminFacade::render('Admin/Product/Index', [
+        return InertiaAdminFacade::render('Admin/Products/Index', [
             'products' => $products,
         ]);
+    }
+
+    function updateStatus(Request $request)
+    {
+        $validated = $request->validate([
+            'product' => 'required|string',
+            'status' => 'required|integer',
+        ]);
+
+        $product = TransProductModel::byHashOrFail($validated['product']);
+
+        $product->status = $validated['status'];
+        $product->save();
+
+        return new SuccessJsonResponse();
     }
 
     /**
