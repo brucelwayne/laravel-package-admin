@@ -42,11 +42,19 @@ class WelcomeController extends Controller
 
     function clearCache(Request $request)
     {
-        $cache_key = $request->get('cache-key');
-        if (empty($cache_key)) {
-            return new ErrorJsonResponse('无法清楚缓存，请指定key！');
+        $key = $request->get('cache-key');
+        $tag = $request->get('cache-tag');
+
+        if ($tag) {
+            Cache::tags($tag)->flush();
+            return new SuccessJsonResponse([], "已清除 tag 为 [{$tag}] 的缓存！");
         }
-        Cache::delete($request->get('cache-key'));
-        return new SuccessJsonResponse([], '清除缓存成功！');
+
+        if ($key) {
+            Cache::forget($key);
+            return new SuccessJsonResponse([], "已清除 key 为 [{$key}] 的缓存！");
+        }
+
+        return new ErrorJsonResponse('无法清除缓存，请至少指定 cache-key 或 cache-tag！');
     }
 }
