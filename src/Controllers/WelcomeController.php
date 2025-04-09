@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Mallria\Core\Facades\InertiaAdminFacade;
+use Mallria\Core\Http\Responses\ErrorJsonResponse;
 use Mallria\Core\Http\Responses\SuccessJsonResponse;
 use Mallria\Passport\Models\UserStateModel;
 
@@ -41,9 +42,11 @@ class WelcomeController extends Controller
 
     function clearCache(Request $request)
     {
-        // 清除与 UserStateModel 相关的所有缓存
-        Cache::tags([UserStateModel::TABLE])->flush();
-
+        $cache_key = $request->get('cache-key');
+        if (empty($cache_key)) {
+            return new ErrorJsonResponse('无法清楚缓存，请指定key！');
+        }
+        Cache::delete($request->get('cache-key'));
         return new SuccessJsonResponse([], '清除缓存成功！');
     }
 }

@@ -10,7 +10,8 @@ Route::prefix(config('admin.url-prefix'))
     ->middleware(['web', 'auth.admin'])
     ->group(function () {
 
-        Route::get('/categories/index', [CategoryController::class, 'index'])->name('categories.index');
+        Route::get('/categories/index', [CategoryController::class, 'index'])
+            ->name('categories.index');
 
         Route::get('categories/sub', [CategoryController::class, 'sub'])
             ->name('categories.sub');

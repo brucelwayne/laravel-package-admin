@@ -227,11 +227,29 @@ class CategoryController extends BaseAdminController
             'user' => ['sometimes', 'max:32'],
             'shop' => ['sometimes', 'max:32'],
             'app' => ['sometimes', 'max:32'],
+            'q' => ['sometimes'],
         ]);
         if ($validator->fails()) {
             return new ErrorJsonResponse($validator->errors()->first());
         }
         $validated = $validator->validated();
+
+        $keywords = Arr::get($validated, 'q');
+        if (!empty($keywords)) {
+            $categories = TransCategoryModel::search($keywords)
+                ->paginate(10);
+            if (!is_empty($categories)) {
+                foreach ($categories as $category) {
+                    $ancestors = $category->getAncestors();
+                    $category->setAttribute('ancestors', $ancestors);
+                    $path = collect($ancestors)->pluck('name');
+                    $category->setAttribute('path', $path);
+                }
+            }
+            return InertiaAdminFacade::render('Admin/Category/SearchResult', [
+                'categories' => $categories,
+            ]);
+        }
 
         $package = Arr::get($validated, 'package');
         if (!empty($package)) {

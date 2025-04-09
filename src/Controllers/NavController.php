@@ -4,6 +4,7 @@ namespace Brucelwayne\Admin\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Mallria\App\Models\LinkModel;
@@ -12,6 +13,7 @@ use Mallria\Core\Facades\InertiaAdminFacade;
 use Mallria\Core\Http\Responses\ErrorJsonResponse;
 use Mallria\Core\Http\Responses\SuccessJsonResponse;
 use Mallria\Core\Models\PageModel;
+use Mallria\Main\Enums\CacheKey;
 use Mallria\Main\Enums\LinkType;
 use Mallria\Main\Models\MainNavModel;
 use Mallria\Shop\Models\TransInsightModel;
@@ -21,6 +23,23 @@ class NavController extends BaseAdminController
 {
     function index(Request $request)
     {
+        $keywords = $request->get('q');
+        if (!empty($keywords)) {
+            $navs = MainNavModel::search($keywords)
+                ->paginate(10);
+            if (!is_empty($navs)) {
+                foreach ($navs as $nav) {
+                    $ancestors = $nav->getAncestors();
+                    $nav->setAttribute('ancestors', $ancestors);
+                    $path = collect($ancestors)->pluck('name');
+                    $nav->setAttribute('path', $path);
+                }
+            }
+            return InertiaAdminFacade::render('Admin/Nav/SearchResult', [
+                'navs' => $navs,
+            ]);
+        }
+
         $navs = MainNavModel::with(['model', 'model.translations', 'translations', 'navParent', 'navParent.model', 'navParent.translations',])
             ->orderBy('id', 'desc')
             ->defaultOrder()
@@ -37,7 +56,7 @@ class NavController extends BaseAdminController
         $validator = Validator::make($request->all(), [
             'parent' => ['nullable'],
             'name' => ['required', 'string', 'max:32'],
-            'link_type' => ['required', 'in:link,page,category,product,insight'],
+            'link_type' => ['required', 'in:none,link,page,category,product,insight'],
             'link_target' => ['required', 'in:_blank,_self'],
             'href' => ['nullable', 'url'],
             'link' => ['nullable', 'max:32'],
@@ -70,7 +89,9 @@ class NavController extends BaseAdminController
         $link_type = LinkType::from($link_type);
 
         $model = null;
-        if ($link_type === LinkType::Link) {
+        if ($link_type === LinkType::None) {
+
+        } else if ($link_type === LinkType::Link) {
             $link_hash = Arr::get($validated, 'link');
             $href = Arr::get($validated, 'href');
             if (empty($href)) {
@@ -85,17 +106,21 @@ class NavController extends BaseAdminController
                 ]);
             }
         } else if ($link_type == LinkType::Page) {
-            if (empty($model_hash)) {
-                return new ErrorJsonResponse(__('请选择关联的对象！'));
-            }
+
             $model_hash = Arr::get($validated, 'page');
-            $model = PageModel::byHashOrFail($model_hash);
-        } elseif ($link_type === LinkType::Category) {
             if (empty($model_hash)) {
                 return new ErrorJsonResponse(__('请选择关联的对象！'));
             }
+            $model = PageModel::byHashOrFail($model_hash);
+
+        } elseif ($link_type === LinkType::Category) {
+
             $model_hash = Arr::get($validated, 'category');
+            if (empty($model_hash)) {
+                return new ErrorJsonResponse(__('请选择关联的对象！'));
+            }
             $model = TransCategoryModel::byHashOrFail($model_hash);
+
         } elseif ($link_type === LinkType::Product) {
             if (empty($model_hash)) {
                 return new ErrorJsonResponse(__('请选择关联的对象！'));
@@ -103,14 +128,16 @@ class NavController extends BaseAdminController
             $model_hash = Arr::get($validated, 'product');
             $model = TransProductModel::byHashOrFail($model_hash);
         } elseif ($link_type === LinkType::Insight) {
+
+            $model_hash = Arr::get($validated, 'insight');
             if (empty($model_hash)) {
                 return new ErrorJsonResponse(__('请选择关联的对象！'));
             }
-            $model_hash = Arr::get($validated, 'insight');
             $model = TransInsightModel::byHashOrFail($model_hash);
+
         }
 
-        if (empty($model)) {
+        if ($link_type !== LinkType::None && empty($model)) {
             return new ErrorJsonResponse('关联模型错误！');
         }
 
@@ -124,8 +151,10 @@ class NavController extends BaseAdminController
             'icon_image' => Arr::get($validated, 'icon_image'),
         ]);
 
-        $main_nav_model->model()->associate($model);
-        $main_nav_model->save();
+        if ($link_type !== LinkType::None) {
+            $main_nav_model->model()->associate($model);
+            $main_nav_model->save();
+        }
 
         if (!empty($parent)) {
             $parent->appendNode($main_nav_model);
@@ -241,6 +270,15 @@ class NavController extends BaseAdminController
             $navs = MainNavModel::search($query)->orderBy('created_at', 'desc')->paginate($perPage);
         }
 
+        if (!is_empty($navs)) {
+            foreach ($navs as $nav) {
+                $ancestors = $nav->getAncestors();
+                $nav->setAttribute('ancestors', $ancestors);
+                $path = collect($ancestors)->pluck('name');
+                $nav->setAttribute('path', $path);
+            }
+        }
+
         return new  SuccessJsonResponse([
             'navs' => $navs,
         ]);
@@ -264,6 +302,12 @@ class NavController extends BaseAdminController
         return new SuccessJsonResponse([
             'result' => $result
         ]);
+    }
+
+    function clearCache(Request $request)
+    {
+        Cache::delete(CacheKey::MainNavData->value);
+        return new SuccessJsonResponse();
     }
 
     function delete(Request $request)

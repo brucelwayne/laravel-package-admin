@@ -3,6 +3,7 @@
 namespace Brucelwayne\Admin\Controllers;
 
 use Illuminate\Http\Request;
+use Mallria\Core\Enums\PostStatus;
 use Mallria\Core\Enums\PostType;
 use Mallria\Core\Facades\InertiaAdminFacade;
 use Mallria\Core\Http\Responses\SuccessJsonResponse;
@@ -13,42 +14,59 @@ class FeatureTagController extends BaseAdminController
 {
     function index(Request $request)
     {
+        $keywords = $request->get('q');
         $currentTag = $request->get('tag', 'all');
         $tags = config('mallria-main.feature-tags');
 
-        if (empty($currentTag) || $currentTag === 'all') {
-            $product_models = TransProductModel::with([
+        $productQuery = TransProductModel::with([
+            'translations',
+            'metarelation',
+            'featureTags',
+            'featureTags.translations',
+            'mediable'
+        ])->where('type', PostType::Product);
+
+        // 如果是搜索模式
+        if (!empty($keywords)) {
+            $productQuery = TransProductModel::search($keywords)
+                ->where('type', PostType::Product->value)
+                ->where('status', PostStatus::Published->value);
+
+            // 若指定了某个 tag，则过滤
+            if ($currentTag !== 'all') {
+                $tagModel = FeatureTagModel::byHashOrFail($currentTag);
+                $productQuery->whereIn('feature_tag_ids', [$tagModel->getKey()]);
+            }
+
+            $productModels = $productQuery->paginate(20);
+
+            $productModels->load([
                 'translations',
                 'metarelation',
                 'featureTags',
                 'featureTags.translations',
                 'mediable'
-            ])
-                ->where('type', PostType::Product)
-                ->cursorPaginate(20);
+            ]);
+
         } else {
-            $currentTagModel = FeatureTagModel::byHashOrFail($currentTag);
-            $currentTagId = $currentTagModel->getKey();
-            $product_models = TransProductModel::with([
-                'translations',
-                'metarelation',
-                'featureTags',
-                'featureTags.translations',
-                'mediable'
-            ])
-                ->whereHas('featureTags', function ($query) use ($currentTagId) {
-                    $query->where('tag_id', $currentTagId);
-                })
-                ->where('type', PostType::Product)
-                ->cursorPaginate(20);
+            // 非搜索模式，根据 tag 过滤
+            if ($currentTag !== 'all') {
+                $tagModel = FeatureTagModel::byHashOrFail($currentTag);
+                $productQuery->whereHas('featureTags', function ($query) use ($tagModel) {
+                    $query->where('tag_id', $tagModel->getKey());
+                });
+            }
+
+            $productModels = $productQuery->cursorPaginate(20);
         }
 
         return InertiaAdminFacade::render('Admin/FeatureTag/Index', [
-            'products' => $product_models,
+            'products' => $productModels,
             'tags' => $tags,
             'tag' => $currentTag,
         ]);
     }
+
 
     function toggle(Request $request)
     {
