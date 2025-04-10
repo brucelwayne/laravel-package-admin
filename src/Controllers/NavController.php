@@ -280,7 +280,7 @@ class NavController extends BaseAdminController
             ]);
         }
 
-        if (!empty($parent)) {
+        if (!empty($parent) && $parent->getKey() !== $main_nav_model->parent_id) {
             $parent->appendNode($main_nav_model);
         }
 
