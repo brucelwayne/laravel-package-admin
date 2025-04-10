@@ -238,6 +238,10 @@ class CategoryController extends BaseAdminController
         if (!empty($keywords)) {
             $categories = TransCategoryModel::search($keywords)
                 ->paginate(10);
+
+            if (!empty($categories)) {
+                $categories->load(['mediable']);
+            }
             if (!is_empty($categories)) {
                 foreach ($categories as $category) {
                     $ancestors = $category->getAncestors();
@@ -246,6 +250,7 @@ class CategoryController extends BaseAdminController
                     $category->setAttribute('path', $path);
                 }
             }
+
             return InertiaAdminFacade::render('Admin/Category/SearchResult', [
                 'categories' => $categories,
             ]);
@@ -507,7 +512,7 @@ class CategoryController extends BaseAdminController
     {
         $category_hash = $request->get('category');
         $category = TransCategoryModel::byHashOrFail($category_hash);
-
+        $category->load(['mediable']);
         $locale = $request->get('locale');
 
         return InertiaAdminFacade::render('Admin/Category/Edit', [
