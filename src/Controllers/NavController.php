@@ -271,8 +271,10 @@ class NavController extends BaseAdminController
         ]);
 
         if (!empty($model)) {
-            $main_nav_model->model()->associate($model);
-            $main_nav_model->save();
+            $main_nav_model->update([
+                'model_id' => $model->getKey(),
+                'model_type' => $model->getMorphClass(),
+            ]);
         } else {
             $main_nav_model->update([
                 'model_id' => null,
