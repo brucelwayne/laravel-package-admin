@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Mallria\Core\Facades\InertiaAdminFacade;
-use Mallria\Core\Http\Responses\ErrorJsonResponse;
 use Mallria\Core\Http\Responses\SuccessJsonResponse;
 use Mallria\Passport\Models\UserStateModel;
 
@@ -44,17 +43,24 @@ class WelcomeController extends Controller
     {
         $key = $request->get('cache-key');
         $tag = $request->get('cache-tag');
+        $clearOpcache = $request->get('opcache'); // 添加参数来触发 OPcache 清除
 
+        // 处理 OPcache 清除
+        if ($clearOpcache) {
+            if (function_exists('opcache_reset')) {
+                opcache_reset();
+            }
+        }
+
+        // 处理普通缓存清除
         if ($tag) {
             Cache::tags($tag)->flush();
-            return new SuccessJsonResponse([], "已清除 tag 为 [{$tag}] 的缓存！");
         }
 
         if ($key) {
             Cache::forget($key);
-            return new SuccessJsonResponse([], "已清除 key 为 [{$key}] 的缓存！");
         }
 
-        return new ErrorJsonResponse('无法清除缓存，请至少指定 cache-key 或 cache-tag！');
+        return new SuccessJsonResponse();
     }
 }
