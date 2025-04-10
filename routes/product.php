@@ -11,7 +11,7 @@ Route::prefix(config('admin.url-prefix'))
 
         Route::get('/products/index', [ProductController::class, 'index'])->name('products.index');
 
-        Route::get('products/search', [ProductController::class, 'search'])
+        Route::get('/products/search', [ProductController::class, 'search'])
             ->name('products.search');
 
         Route::put('/products/update-status', [ProductController::class, 'updateStatus'])->name('products.update-status');

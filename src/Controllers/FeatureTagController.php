@@ -8,27 +8,29 @@ use Mallria\Core\Enums\PostType;
 use Mallria\Core\Facades\InertiaAdminFacade;
 use Mallria\Core\Http\Responses\SuccessJsonResponse;
 use Mallria\Main\Models\FeatureTagModel;
+use Mallria\Shop\Models\PublishedTransProductModel;
 use Mallria\Shop\Models\TransProductModel;
 
 class FeatureTagController extends BaseAdminController
 {
+
+    const Relations = ['translations',
+        'metarelation',
+        'featureTags',
+        'featureTags.translations',
+        'mediable'];
+
     function index(Request $request)
     {
         $keywords = $request->get('q');
         $currentTag = $request->get('tag', 'all');
         $tags = config('mallria-main.feature-tags');
 
-        $productQuery = TransProductModel::with([
-            'translations',
-            'metarelation',
-            'featureTags',
-            'featureTags.translations',
-            'mediable'
-        ])->where('type', PostType::Product);
+        $productQuery = PublishedTransProductModel::with(self::Relations);
 
         // 如果是搜索模式
         if (!empty($keywords)) {
-            $productQuery = TransProductModel::search($keywords)
+            $productQuery = PublishedTransProductModel::search($keywords)
                 ->where('type', PostType::Product->value)
                 ->where('status', PostStatus::Published->value);
 
@@ -40,13 +42,7 @@ class FeatureTagController extends BaseAdminController
 
             $productModels = $productQuery->paginate(20);
 
-            $productModels->load([
-                'translations',
-                'metarelation',
-                'featureTags',
-                'featureTags.translations',
-                'mediable'
-            ]);
+            $productModels->load(self::Relations);
 
         } else {
             // 非搜索模式，根据 tag 过滤
