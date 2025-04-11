@@ -11,7 +11,7 @@ Route::prefix(config('admin.url-prefix'))
     ->middleware(['web', 'auth.admin'])
     ->group(function () {
 
-        Route::get('external/posts', [ExternalPostController::class, 'posts'])
+        Route::get('external/posts', [ExternalPostController::class, 'newPosts'])
             ->name('external.posts');
         Route::get('external/sellers', [ExternalSellerController::class, 'sellers'])
             ->name('external.sellers');

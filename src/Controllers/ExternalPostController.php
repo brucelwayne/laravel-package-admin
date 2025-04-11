@@ -2,7 +2,10 @@
 
 namespace Brucelwayne\Admin\Controllers;
 
+use Brucelwayne\SEO\Models\SeoPostModel;
+use Brucelwayne\SEO\Models\UserFavoriteSeoPostModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Mallria\App\Facades\AppFacade;
 use Mallria\Core\Enums\PostType;
 use Mallria\Core\Facades\InertiaAdminFacade;
@@ -16,6 +19,62 @@ use Mallria\Shop\Models\MallriaPostModel;
 
 class ExternalPostController extends BaseAdminController
 {
+
+    function newPosts(Request $request)
+    {
+        /**
+         * @var User $user
+         */
+        $user = auth()->user();
+
+        // 从请求中获取分页数，默认每页10条数据
+        $pageSize = $request->get('pageSize', 10);
+        $keywords = $request->get('query');
+        $cursor = $request->get('cursor'); // 获取游标
+
+        // 创建查询对象
+        if (!empty($keywords)) {
+            // Use paginate for search queries
+            $postsQuery = SeoPostModel::search($keywords)
+                ->orderBy('created_at', 'desc');
+            $posts = $postsQuery->paginate($pageSize);
+
+            $posts->load(['seo_user.user']);
+
+            return InertiaAdminFacade::render('Business/Admin/External/SearchPosts', [
+                'posts' => $posts,
+            ]);
+        } else {
+            // Use cursorPaginate for browsing
+            $posts = SeoPostModel::with(['seo_user.user'])->orderBy('_id', 'desc')->cursorPaginate($pageSize);
+
+            // 获取总数
+            $totalCount = Cache::remember('seo_posts_count', 60, function () {
+                return SeoPostModel::raw(function ($collection) {
+                    return $collection->estimatedDocumentCount();
+                });
+            });
+
+            // 获取用户是否收藏的帖子ID
+            $userFavoritedIds = UserFavoriteSeoPostModel::where('user_id', $user->getKey())
+                ->whereIn('seo_post_id', $posts->pluck('_id')->toArray())
+                ->pluck('seo_post_id')
+                ->toArray();
+
+            // 标记用户是否收藏
+            $posts->transform(function ($post) use ($userFavoritedIds) {
+                $post->is_favorited = in_array($post->getKey(), $userFavoritedIds);
+                return $post;
+            });
+
+            return InertiaAdminFacade::render('Business/Admin/External/NewPosts', [
+                'posts' => $posts,
+                'totalCount' => $totalCount,
+            ]);
+        }
+    }
+
+
     function posts(Request $request)
     {
         // 获取搜索关键词
